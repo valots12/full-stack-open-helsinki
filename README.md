@@ -1,7 +1,7 @@
 # Full Stack Open Exercises
 
 Exercises for the course: Full Stack Open.
-Using Javascript, React, Node, Express, REST API, Typescript and more technologies by Juanescacha.
+Using Javascript, React, Node, Express, REST API, Typescript and more technologies.
 Submission for the [Full Stack Open](https://fullstackopen.com/) by the [University of Helsinki's Department of Computer Science](https://www.mooc.fi/en).
 
 ## General info
