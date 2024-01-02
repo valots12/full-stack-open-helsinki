@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Filter from './components/Filter'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import Filter from './components/filter'
+import PersonForm from './components/personForm'
+import Persons from './components/persons'
+import personService from './services/persons'
 
 
 const App = () => {
@@ -10,20 +11,16 @@ const App = () => {
   const [newName, setNewName] = useState('Insert new name..')
   const [newNumber, setNewNumber] = useState('Insert new number..')
   const [filter, setFilter] = useState('')
-
   const [contacts, setContacts] = useState([])
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setContacts(response.data)
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialContacts => {
+        setContacts(initialContacts)
       })
-  }
-  
-  useEffect(hook, [])
+  }, [])
+
   console.log('render', contacts.length, 'contacts')
 
   const addContact = (event) => {
@@ -34,13 +31,41 @@ const App = () => {
     }
   
     if (contacts.some(contact => contact.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`'${ContactContent.name}' is already in the phonebook; replace the old number with a new one?`)) {
+        const existingContact = contacts.find(contact => contact.name == newName);
+
+        personService
+        .update(existingContact.id, ContactContent)
+          .then(returnedContact => {
+            setContacts(contacts.map(contact => contact.id !== existingContact.id ? contact : returnedContact))
+        })
     }
+  }
   
     else {
-      setContacts(contacts.concat(ContactContent))
-      setNewName('')
-      setNewNumber('')
+      personService
+      .create(ContactContent)
+        .then(returnedContact => {
+          setContacts(contacts.concat(returnedContact))
+          setNewName('')
+          setNewNumber('')
+      })
+    }
+  }
+
+  const deleteContact = (id, name) => {
+    const url = `http://localhost:3001/persons/${id}`
+    const contact = contacts.find(n => n.id === id)
+  
+    if (window.confirm(`Delete '${contact.name}'?`)) {
+      personService
+      .deleteIt(id)
+        .then(() => {
+          const updatedContacts = contacts.filter((contact)=> contact.id!==id)
+          setContacts(updatedContacts)
+          console.log('Deletion confirmed')
+        }
+        )
     }
   }
   
@@ -72,10 +97,8 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons contacts={contacts} filter={filter} />
+      <Persons contacts={contacts} filter={filter} deleteContact={deleteContact}/>
 
-      {/* <p>debug: {newName}</p>
-      <p>debug: {newNumber}</p> */}
     </div>
   )
 }

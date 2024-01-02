@@ -1,7 +1,7 @@
-const Contact = ({ contact }) => {
-  return (
-    <p>{contact.name} {contact.number}</p>
-  )
-}
-
-export default Contact
+const Contact = ({ contact, deleteContact }) => {
+    return (
+      <p>{contact.name} {contact.number} <button onClick={() => deleteContact(contact.id, contact.name)}>Delete</button></p>
+    )
+  }
+  
+  export default Contact
