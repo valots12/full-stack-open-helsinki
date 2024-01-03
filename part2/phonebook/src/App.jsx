@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from './components/filter'
 import PersonForm from './components/personForm'
 import Persons from './components/persons'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 
@@ -12,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('Insert new number..')
   const [filter, setFilter] = useState('')
   const [contacts, setContacts] = useState([])
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -38,6 +40,17 @@ const App = () => {
         .update(existingContact.id, ContactContent)
           .then(returnedContact => {
             setContacts(contacts.map(contact => contact.id !== existingContact.id ? contact : returnedContact))
+
+            setSuccessMessage(`Updated '${newName}'`)
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 2000)
+        })
+        .catch(error => {
+          setSuccessMessage(`Information of '${newName}' has already been removed from server`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 2000)
         })
     }
   }
@@ -49,6 +62,11 @@ const App = () => {
           setContacts(contacts.concat(returnedContact))
           setNewName('')
           setNewNumber('')
+
+          setSuccessMessage(`Added '${newName}'`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 2000)
       })
     }
   }
@@ -88,6 +106,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} />
       
       <Filter filter={filter} handleFilterChange={handleFilterChange}/>
 
