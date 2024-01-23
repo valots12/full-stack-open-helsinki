@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const helper = require('../utils/test_helper')
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbG90cyIsImlkIjoiNjVhYTFiODQxYjViMmYzODNiZmVjNjQ0IiwiaWF0IjoxNzA1OTU1NjQ1fQ.g0d9HQ28VTxRwAqOIKLYxmIsRLAxHIqAD9yUFP5oTbQ"
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -42,7 +43,7 @@ describe('check on blogs api', () => {
 
   test('the POST request works correctly', async () => {
 
-    newBlog = {
+    const newBlog = {
       title: "Type wars",
       author: "Robert C. Martin",
       url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
@@ -51,14 +52,40 @@ describe('check on blogs api', () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
+      .expect("Content-Type", /application\/json/)
 
     const response = await api
       .get("/api/blogs")
       .expect(200)
 
     expect(response.body).toHaveLength(helper.listWithMoreBlogs.length + 1)
+  })
+
+  test('the POST request does not work with bad token', async () => {
+
+    const newBlog = {
+      title: "Type wars",
+      author: "Robert C. Martin",
+      url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+      likes: 2
+    }  
+
+    const token_bad = "BAD TOKEN"
+
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token_bad}`)
+      .send(newBlog)
+      .expect(401)
+
+    const response = await api
+      .get("/api/blogs")
+      .expect(200)
+
+    expect(response.body).toHaveLength(helper.listWithMoreBlogs.length)
   })
 
   test('the likes property has a default value equal to 0', async () => {
@@ -71,6 +98,7 @@ describe('check on blogs api', () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
 
@@ -91,6 +119,7 @@ describe('check on blogs api', () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlogWithoutUrl)
       .expect(400)
 
@@ -101,29 +130,34 @@ describe('check on blogs api', () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlogWithoutTitle)
       .expect(400)
   })
 
   test('the DELETE request works correctly', async () => {
 
-    const testId = '5a422aa71b54a676234d17f8'
+    const blogsAtStart = await Blog.find({}).populate('user')
+    const blogToDelete = blogsAtStart[0]
 
     await api
-      .delete(`/api/blogs/${testId}`)
+      .delete(`/api/blogs/${blogToDelete._id}`)
+      .set("Authorization", `Bearer ${token}`)
       .expect(204)
   })
 
   test('the UPDATE request works correctly', async () => {
 
-    const testId = '5a422aa71b54a676234d17f8'
+    const blogsAtStart = await Blog.find({}).populate('user')
+    const blogToUpdate = blogsAtStart[0]
 
     const updatedBlog = {
       likes: 50
     }
 
     await api
-      .put(`/api/blogs/${testId}`)
+      .put(`/api/blogs/${blogToUpdate._id}`)
+      .set("Authorization", `Bearer ${token}`)
       .send(updatedBlog)
       .expect(200)
   })

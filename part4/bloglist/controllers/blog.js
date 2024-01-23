@@ -1,4 +1,4 @@
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
@@ -10,37 +10,29 @@ blogRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-// const getTokenFrom = request => {
-//   const authorization = request.get('authorization')
-//   if (authorization && authorization.startsWith('Bearer ')) {
-//     return authorization.replace('Bearer ', '')
-//   }
-//   return null
-// }
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 blogRouter.post('/', async (request, response) => {
-	const body = request.body
+  const body = request.body
+  const user = request.user
 
-	// if (!body.title || !body.url) {
-	// 	return response.status(400).json({ error: "Title or URL Missing" })
-	// }
+  if (!body.title || !body.url) {
+    return response.status(400).json({ error: "Title or URL Missing" })
+  }
 
-  // const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  // if (!decodedToken.id) {
-  //   return response.status(401).json({ error: 'token invalid' })
-  // }
-
-  // const user = await User.findById(decodedToken.id
-  
-  const user = await User.findById(body.user)
-
-	const blog = new Blog({
-		title: body.title,
-		author: body.author,
-		url: body.url,
-		likes: body.likes,
-		user: user._id,
-	})
+  const blog = new Blog({
+	title: body.title,
+	author: body.author,
+	url: body.url,
+	likes: body.likes,
+	user: user._id,
+  })
 
   const savedBlog = await blog.save()
 
@@ -51,8 +43,35 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const id = request.params.id
+  const blog = await Blog.findById(request.params.id)
+  const user = request.user
+
+  if (!blog) {
+	return response
+		.status(400)
+		.json({ error: `Blog by ID ${id} does not exist` })
+	}
+
+  if (!blog.user) {
+	return response
+		.status(404)
+		.json({ error: `Blog by ID ${id} does not have owner user` })
+	}
+
+  if (blog.user.toString() === user._id.toString()) {
+	await Blog.findByIdAndDelete(id)
+	user.blogs = user.blogs.filter(
+		blogID => blogID.toString() !== blog._id.toString()
+	)
+
+	await user.save()
+	response.status(204).end()
+  } else {
+	return response
+		.status(401)
+		.json({ error: "Unauthorized access to the blog" })
+	}
 })
 
 blogRouter.put('/:id', (request, response) => {
