@@ -4,7 +4,7 @@ const baseUrl = '/api/blogs'
 let token = null
 
 const setToken = newToken => {
-  token = `Bearer ${newToken}`
+  token = `bearer ${newToken}`
 }
 
 const getAll = async () => {
@@ -13,15 +13,14 @@ const getAll = async () => {
 }
 
 const create = async newObject => {
-
-  console.log('test', token)
   const config = {
     headers: { Authorization: token },
   }
 
-  const request = axios.post(baseUrl, newObject, config)
-  return request.then(response => response.data)
+	const response = await axios.post(baseUrl, newObject, config)
+	return response.data
 }
+
 
 export default { 
   getAll, create, setToken
