@@ -4,6 +4,7 @@ const baseUrl = '/api/blogs'
 let token = null
 
 const setToken = newToken => {
+  token = `${newToken}`
   token = `Bearer ${newToken}`
 }
 
@@ -14,17 +15,22 @@ const getAll = async () => {
 
 const create = async newObject => {
   const config = {
-    headers: { Authorization: token },
+    headers: { Authorization: token }
   }
 
-  console.log('baseurl', baseUrl)
-  console.log('newObject', newObject)
-  console.log('config', config)
-
-	const response = await axios.post(baseUrl, newObject, config)
-	return response.data
+  try {
+    const response = await axios.post(baseUrl, newObject, config);
+    return response.data;
+  } catch (error) {
+      if (error.response.status === 401) {
+          console.error("Authentication failed:", error.response.data);
+          return error.response.data;
+      } else {
+          console.error("Error:", error.response.data);
+          return error.response.data;
+      }
+  }
 }
-
 
 export default { 
   getAll, create, setToken

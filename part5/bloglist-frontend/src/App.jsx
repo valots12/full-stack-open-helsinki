@@ -3,10 +3,11 @@ import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import "./app.css"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
@@ -29,7 +30,7 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
       title: title,
@@ -37,11 +38,22 @@ const App = () => {
       url: url
     }
 
-    blogService
-      .create(blogObject)
-        .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-      })
+    const returnedBlog = await blogService.create(blogObject)
+    console.log('returnedBlog.error', returnedBlog.error)
+    console.log('returnedBlog', returnedBlog)
+
+    if (returnedBlog.error) {
+      setNotificationMessage("error creating blog: " + returnedBlog.error)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } else {
+      setBlogs(blogs.concat(returnedBlog))
+      setNotificationMessage("a new blog '" + returnedBlog.title + "' by " + returnedBlog.author + " added")
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
   }
 
   const handleLogin = async (event) => {
@@ -55,14 +67,18 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       ) 
       blogService.setToken(user.token)
-      console.log('logging in with', username, password)
+      setNotificationMessage('logging in with ' + username)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+
       setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotificationMessage('error: wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotificationMessage(null)
       }, 5000)
     }
   }
@@ -73,6 +89,12 @@ const App = () => {
     setUser('')
     setUsername('')
     setPassword('')
+
+    setNotificationMessage('logging out')
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
+
   }
 
   const loginForm = () => (
@@ -143,7 +165,9 @@ const App = () => {
     <div>
       <h1>Blogs</h1>
 
-      <Notification message={errorMessage} />
+      <Notification message={notificationMessage} />
+      <br/>
+      <br/> 
 
       {!user && loginForm()}
 

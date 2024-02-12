@@ -1,90 +1,60 @@
-const User = require('../models/user')
+const { groupBy } = require('lodash')
 
-const usersInDb = async () => {
-  const users = await User.find({})
-  return users.map(u => u.toJSON())
-}
-
-const dummy = () => {
-  return 1
-}
+const dummy = (blogs) => 1
 
 const totalLikes = (blogs) => {
-  const reducer = (sum, blog) => {
-    return sum + blog.likes
-  }
-  return blogs.reduce(reducer, 0)
+  return blogs.reduce((sum, blog) => blog.likes + sum, 0)
 }
- 
-const favoriteBlog = (blogs) => {
-  if (blogs.length === 0) return {}
 
-  const reducer = (max, item) => {
-    return item.likes > max ? item.likes : max
+const favoriteBlog = (blogs) => {
+  if (blogs.length === 0) {
+    return undefined
   }
-  const maxLikes = blogs.reduce(reducer, blogs[0].likes)
-  const favoriteBlog = blogs.find(blog => blog.likes === maxLikes)
-  const { author, likes, title } = favoriteBlog
-  return { author, likes, title }
+
+  const { title, author, url, likes } = blogs.sort((b1, b2) => b2.likes - b1.likes)[0]
+
+  return { title, author, url, likes } 
 }
 
 const mostBlogs = (blogs) => {
-  if (blogs.length === 0) return {}
-
-  const authorCount = {};
-  blogs.forEach(blog => {
-    const author = blog.author;
-    authorCount[author] = (authorCount[author] || 0) + 1;
-  });
-  
-  // Find the author with the most blogs
-  let mostBlogsAuthor = null;
-  let mostBlogsCount = 0;
-  
-  for (const author in authorCount) {
-    if (authorCount[author] > mostBlogsCount) {
-      mostBlogsCount = authorCount[author];
-      mostBlogsAuthor = author;
-    }
+  if (blogs.length === 0) {
+    return undefined
   }
 
-  return { 
-    "author": mostBlogsAuthor,
-    "blogs": mostBlogsCount
-  }
+  const blogsByAuthor = groupBy(blogs, (blog) => blog.author)
+
+  const authorBlogs = Object.entries(blogsByAuthor).reduce((array, [author, blogList]) => {
+    return array.concat({
+      author, 
+      blogs: blogList.length
+    })
+  }, [])
+
+  return authorBlogs.sort((e1, e2) => e2.blogs-e1.blogs)[0]
 }
 
 const mostLikes = (blogs) => {
-  if (blogs.length === 0) return {}
-
-  const authorCount = {};
-  blogs.forEach(blog => {
-    const author = blog.author;
-    authorCount[author] = (authorCount[author] || 0) + blog.likes;
-  });
-  
-  // Find the author with the most blogs
-  let mostBlogsAuthor = null;
-  let mostBlogsLikes = 0;
-  
-  for (const author in authorCount) {
-    if (authorCount[author] > mostBlogsLikes) {
-      mostBlogsLikes = authorCount[author];
-      mostBlogsAuthor = author;
-    }
+  if (blogs.length === 0) {
+    return undefined
   }
 
-  return { 
-    'author': mostBlogsAuthor,
-    'likes': mostBlogsLikes
-  }
+  const blogsByAuthor = groupBy(blogs, (blog) => blog.author)
+
+  const authorBlogs = Object.entries(blogsByAuthor).reduce((array, [author, blogList]) => {
+    return array.concat({
+      author, 
+      likes: blogList.reduce((sum, blog) => sum + blog.likes, 0)
+    })
+  }, [])
+
+  return authorBlogs.sort((e1, e2) => e2.likes-e1.likes)[0]
 }
+
 
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
-  mostLikes,
-  usersInDb
+  mostLikes
 }
