@@ -52,6 +52,10 @@ const App = () => {
       }, 5000)
     } else {
       setBlogs(blogs.concat(returnedBlog))
+      console.log('blogs', blogs)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
       blogFormRef.current.toggleVisibility()
       setNotificationMessage("a new blog '" + returnedBlog.title + "' by " + returnedBlog.author + " added")
       setTimeout(() => {
