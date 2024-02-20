@@ -51,7 +51,9 @@ const App = () => {
         setNotificationMessage(null)
       }, 5000)
     } else {
-      setBlogs(blogs.concat(returnedBlog))
+      blogService.getAll().then(blogs =>
+        setBlogs( blogs )
+      )  
       console.log('blogs', blogs)
       setTitle('')
       setAuthor('')
@@ -61,6 +63,36 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
+    }
+  }
+
+  const updateBlog = async (updatedBlog) => {
+    const returnedBlog = await blogService.update(updatedBlog)
+
+    if (returnedBlog.error) {
+      setNotificationMessage("error updating blog: " + returnedBlog.error)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } else {
+      blogService.getAll().then(blogs =>
+        setBlogs( blogs )
+      )
+    }
+  }
+  
+  const deleteBlog = async (deletedBlog) => {
+    const returnedBlog = await blogService.deleteIt(deletedBlog, deletedBlog.id)
+
+    if (returnedBlog.error) {
+      setNotificationMessage("error deleting blog: " + returnedBlog.error)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } else {
+      blogService.getAll().then(blogs =>
+        setBlogs( blogs )
+      )
     }
   }
 
@@ -176,9 +208,15 @@ const App = () => {
         </div>
       }
       <br/>
-
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      
+      {blogs
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog =>
+          <Blog key={blog.id} 
+                blog={blog} 
+                updateBlog={updateBlog} 
+                deleteBlog={deleteBlog}
+          />
       )}
     </div>
   )
