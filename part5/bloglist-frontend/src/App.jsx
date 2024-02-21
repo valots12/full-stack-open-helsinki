@@ -5,14 +5,14 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import "./app.css"
+import './app.css'
 import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notificationMessage, setNotificationMessage] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -46,20 +46,20 @@ const App = () => {
     console.log('returnedBlog', returnedBlog)
 
     if (returnedBlog.error) {
-      setNotificationMessage("error creating blog: " + returnedBlog.error)
+      setNotificationMessage('error creating blog: ' + returnedBlog.error)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
     } else {
       blogService.getAll().then(blogs =>
         setBlogs( blogs )
-      )  
+      )
       console.log('blogs', blogs)
       setTitle('')
       setAuthor('')
       setUrl('')
       blogFormRef.current.toggleVisibility()
-      setNotificationMessage("a new blog '" + returnedBlog.title + "' by " + returnedBlog.author + " added")
+      setNotificationMessage(`a new blog '${returnedBlog.title}' by ${returnedBlog.author} added`)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -70,7 +70,7 @@ const App = () => {
     const returnedBlog = await blogService.update(updatedBlog)
 
     if (returnedBlog.error) {
-      setNotificationMessage("error updating blog: " + returnedBlog.error)
+      setNotificationMessage('error updating blog: ' + returnedBlog.error)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -80,32 +80,39 @@ const App = () => {
       )
     }
   }
-  
-  const deleteBlog = async (deletedBlog) => {
-    const returnedBlog = await blogService.deleteIt(deletedBlog, deletedBlog.id)
 
-    if (returnedBlog.error) {
-      setNotificationMessage("error deleting blog: " + returnedBlog.error)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
-    } else {
-      blogService.getAll().then(blogs =>
-        setBlogs( blogs )
-      )
+  const deleteBlog = async (deletedBlog) => {
+
+    if (window.confirm(`Remove blog '${deletedBlog.title}' by ${deletedBlog.author} ?`)) {
+      const returnedBlog = await blogService.deleteIt(deletedBlog, deletedBlog.id)
+
+      if (returnedBlog.error) {
+        setNotificationMessage('error deleting blog: ' + returnedBlog.error)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+      } else {
+        blogService.getAll().then(blogs =>
+          setBlogs( blogs )
+        )
+        setNotificationMessage(`blog titled '${deletedBlog.title}' by ${deletedBlog.author} deleted`)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+      }
     }
   }
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
       })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setNotificationMessage('logging in with ' + username)
       setTimeout(() => {
@@ -140,7 +147,7 @@ const App = () => {
   const logoutForm = () => (
     <form onSubmit={handleLogout}>
       <button type="submit">logout</button>
-    </form>      
+    </form>
   )
 
   const handleTitleChange = (event) => {
@@ -170,8 +177,8 @@ const App = () => {
       handlePasswordChange = {handlePasswordChange}
       username = {username}
       password = {password}
-  />
-)
+    />
+  )
 
   const blogForm = () => (
     <Togglable buttonLabel="new blog" ref={blogFormRef}>
@@ -195,7 +202,7 @@ const App = () => {
 
       <Notification message={notificationMessage} />
       <br/>
-      <br/> 
+      <br/>
 
       {!user && loginForm()}
 
@@ -205,19 +212,19 @@ const App = () => {
         <br/>
         {blogForm()}
         <br/>
-        </div>
+      </div>
       }
       <br/>
-      
+
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
-          <Blog key={blog.id} 
-                blog={blog} 
-                updateBlog={updateBlog} 
-                deleteBlog={deleteBlog}
+          <Blog key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+            deleteBlog={deleteBlog}
           />
-      )}
+        )}
     </div>
   )
 }

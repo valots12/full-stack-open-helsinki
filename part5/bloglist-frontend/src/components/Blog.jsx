@@ -32,7 +32,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
 
     deleteBlog(deletedBlog)
   }
-    
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -57,7 +57,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
         <br />
         <button onClick={deleteIt}>delete</button>
       </div>
-    </div>    
-)}
+    </div>
+  )}
 
 export default Blog

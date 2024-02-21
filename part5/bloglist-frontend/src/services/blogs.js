@@ -18,16 +18,16 @@ const create = async newObject => {
   }
 
   try {
-    const response = await axios.post(baseUrl, newObject, config);
-    return response.data;
+    const response = await axios.post(baseUrl, newObject, config)
+    return response.data
   } catch (error) {
-      if (error.response.status === 401) {
-          console.error("Authentication failed:", error.response.data);
-          return error.response.data;
-      } else {
-          console.error("Error:", error.response.data);
-          return error.response.data;
-      }
+    if (error.response.status === 401) {
+      console.error('Authentication failed:', error.response.data)
+      return error.response.data
+    } else {
+      console.error('Error:', error.response.data)
+      return error.response.data
+    }
   }
 }
 
@@ -38,16 +38,17 @@ const update = async newObject => {
 
   try {
     const response = await axios.put(`${ baseUrl }/${newObject.id}`, newObject, config)
-    return response.data;
+    return response.data
+
   } catch (error) {
     console.log('errr', error.response)
     console.log('new', newObject)
     if (error.response.status === 401) {
-        console.error("Authentication failed:", error.response.data);
-        return error.response.data;
+      console.error('Authentication failed:', error.response.data)
+      return error.response.data
     } else {
-        console.error("Error:", error.response.data);
-        return error.response.data;
+      console.error('Error:', error.response.data)
+      return error.response.data
     }
   }
 }
@@ -58,21 +59,22 @@ const deleteIt = async newObject => {
   }
 
   try {
-    const response = await axios.delete(`${ baseUrl }/${newObject.id}`, config)
-    return response.data;
+    const request = await axios.delete(`${ baseUrl }/${newObject.id}`, config)
+    return request.data
+
   } catch (error) {
     console.log('errr', error.response)
     console.log('new', newObject)
     if (error.response.status === 401) {
-        console.error("Authentication failed:", error.response.data);
-        return error.response.data;
+      console.error('Authentication failed:', error.response.data)
+      return error.response.data
     } else {
-        console.error("Error:", error.response.data);
-        return error.response.data;
+      console.error('Error:', error.response.data)
+      return error.response.data
     }
   }
 }
 
-export default { 
+export default {
   getAll, create, update, deleteIt, setToken
 }

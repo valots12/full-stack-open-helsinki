@@ -38,15 +38,12 @@ router.post('/', userExtractor, async (request, response) => {
 
 router.delete('/:id', userExtractor, async (request, response) => {
 
-  // console.log('request', request)
-  console.log('user',request.user)
-  console.log('token',request.token)
-
   const blog = await Blog.findById(request.params.id)
   if (!blog) {
     return response.status(204).end()
   }
 
+  const user = request.user
   if ( user.id.toString() !== blog.user.toString() ) {
     return response.status(403).json({ error: 'user not authorized' })
   }
