@@ -2,7 +2,7 @@ import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 const blog = {
   title: 'Component testing is done with react-testing-library',
@@ -21,14 +21,7 @@ beforeEach(() => {
   render(<Blog blog={blog} updateBlog={mockUpdateBlog} deleteBlog={mockDeleteBlog} />)
 })
 
-describe('part5.13', () => {
-  test('Render title and author', () => {
-    const element = screen.getByText('Component testing is done with react-testing-library - Dave')
-    expect(element).toBeDefined()
-  })
-})
-
-describe('part5.14', () => {
+describe('part5.16', () => {
   test('Render url and likes', async () => {
     const user = userEvent.setup()
     const button = screen.getByText('view')

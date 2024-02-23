@@ -49,9 +49,10 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
       <div style={showWhenVisible}>
         {blog.title} - {blog.author} <button onClick={toggleVisibility}>hide</button>
         <br />
-        {blog.url}
-        <br />
-        {blog.likes} <button onClick={increaseLike}>like</button>
+        <div data-testid="blog-url">{blog.url}</div>
+        <div style={{ display: 'inline-block' }}>
+          <div data-testid="blog-likes" style={{ display: 'inline-block' }}>{blog.likes}</div> <button onClick={increaseLike} style={{ display: 'inline-block' }}>like</button>
+        </div>
         <br />
         {blog.user.username}
         <br />
