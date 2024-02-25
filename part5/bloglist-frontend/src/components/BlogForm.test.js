@@ -12,36 +12,29 @@ const blog = {
   user: { username: 'valots' }
 }
 
-let mockUpdateBlog = jest.fn()
-let mockDeleteBlog = jest.fn()
+let mockCreateBlog = jest.fn()
+let user = userEvent.setup()
 
 beforeEach(() => {
-  mockUpdateBlog = jest.fn()
-  mockDeleteBlog = jest.fn()
-  render(<Blog blog={blog} updateBlog={mockUpdateBlog} deleteBlog={mockDeleteBlog} />)
+  user = userEvent.setup()
+  mockCreateBlog = jest.fn()
+  render(<BlogForm createBlog={mockCreateBlog} />)
 })
 
 describe('part5.16', () => {
-  test('Render url and likes', async () => {
-    const user = userEvent.setup()
-    const button = screen.getByText('view')
+  test('Blog form render the new details when a new blog is created', async () => {
+    const inputs = screen.getAllByRole('textbox')
+    const button = screen.getByText('create')
+
+    await user.type(inputs[0], blog.title)
+    await user.type(inputs[1], blog.author)
+    await user.type(inputs[2], blog.url)
     await user.click(button)
 
-    const urlElement = screen.getByTestId('blog-url')
-    expect(urlElement).toHaveTextContent('test.html')
-
-    const likesElement = screen.getByTestId('blog-likes')
-    expect(likesElement).toHaveTextContent('6')
-  })
-})
-
-describe('part5.15', () => {
-  test('Double click of the like button', async () => {
-    const user = userEvent.setup()
-    const button = screen.getByText('like')
-    await user.click(button)
-    await user.click(button)
-
-    expect(mockUpdateBlog.mock.calls).toHaveLength(2)
+    expect(mockCreateBlog.mock.calls).toHaveLength(1)
+    console.log(mockCreateBlog.mock.calls[0])
+    expect(mockCreateBlog.mock.calls[0][0].title).toBe(blog.title)
+    expect(mockCreateBlog.mock.calls[0][0].author).toBe(blog.author)
+    expect(mockCreateBlog.mock.calls[0][0].url).toBe(blog.url)
   })
 })

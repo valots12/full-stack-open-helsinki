@@ -1,12 +1,49 @@
-const BlogForm = ({
-  addBlog,
-  handleTitleChange,
-  handleAuthorChange,
-  handleUrlChange,
-  title,
-  author,
-  url
-}) => {
+import { useState } from 'react'
+
+const BlogForm = ({ createBlog }) => {
+
+  const [form, setForm] = useState({
+    author: '',
+    title: '',
+    url: '',
+    likes: 0
+  })
+
+  const handleAuthor = (event) => {
+    setForm({
+      ...form,
+      author: event.target.value
+    })
+  }
+
+  const handleTitle = (event) => {
+    setForm({
+      ...form,
+      title: event.target.value
+    })
+  }
+
+  const handleUrl = (event) => {
+    setForm({
+      ...form,
+      url: event.target.value
+    })
+  }
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    createBlog({
+      title: form.title,
+      author: form.author,
+      url: form.url
+    })
+    setForm({
+      title: '',
+      author: '',
+      url: ''
+    })
+  }
+
   return (
     <div>
       <h2>Create a new blog</h2>
@@ -14,31 +51,34 @@ const BlogForm = ({
         <div>
             title:
           <input
-            type="text"
-            value={title}
-            name="Title"
-            onChange={handleTitleChange}
+            id='title'
+            type='text'
+            value={form.title}
+            name='Title'
+            onChange={handleTitle}
           />
         </div>
         <div>
             author:
           <input
-            type="text"
-            value={author}
-            name="Author"
-            onChange={handleAuthorChange}
+            id='author'
+            type='text'
+            value={form.author}
+            name='Author'
+            onChange={handleAuthor}
           />
         </div>
         <div>
             url:
           <input
-            type="text"
-            value={url}
-            name="Url"
-            onChange={handleUrlChange}
+            id='url'
+            type='text'
+            value={form.url}
+            name='Url'
+            onChange={handleUrl}
           />
         </div>
-        <button type="submit">create</button>
+        <button id="create-button" type="submit">create</button>
       </form>
     </div>
   )
