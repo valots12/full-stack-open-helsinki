@@ -44,19 +44,19 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
   return(
     <div style={blogStyle} className='blog'>
       <div style={hideWhenVisible}>
-        {blog.title} - {blog.author} <button onClick={toggleVisibility}>view</button>
+        {blog.title} - {blog.author} <button id="view-button" onClick={toggleVisibility}>view</button>
       </div>
       <div style={showWhenVisible}>
         {blog.title} - {blog.author} <button onClick={toggleVisibility}>hide</button>
         <br />
         <div data-testid="blog-url">{blog.url}</div>
         <div style={{ display: 'inline-block' }}>
-          <div data-testid="blog-likes" style={{ display: 'inline-block' }}>{blog.likes}</div> <button onClick={increaseLike} style={{ display: 'inline-block' }}>like</button>
+          <div data-testid="blog-likes" style={{ display: 'inline-block' }}>{blog.likes}</div> <button id="like-button" onClick={increaseLike} style={{ display: 'inline-block' }}>like</button>
         </div>
         <br />
         {blog.user.username}
         <br />
-        <button onClick={deleteIt}>delete</button>
+        <button id="delete-button" onClick={deleteIt}>delete</button>
       </div>
     </div>
   )}
