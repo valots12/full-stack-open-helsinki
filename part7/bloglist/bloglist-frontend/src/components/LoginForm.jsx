@@ -1,34 +1,21 @@
-import { useDispatch } from 'react-redux'
-import { login } from '../reducers/loginReducer'
-import { showNotification } from '../reducers/notificationReducer'
-import loginService from '../services/login'
+import PropTypes from 'prop-types'
 
-const LoginForm = () => {
-  const dispatch = useDispatch()
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      dispatch(showNotification('logging in with ' + username, 5))
-
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-      dispatch(showNotification('error: wrong credentials', 5))
-    }
+const LoginForm = ({
+  handleLogin,
+  handleUsernameChange,
+  handlePasswordChange,
+  username,
+  password
+}) => {
+  LoginForm.propTypes = {
+    handleSubmit: PropTypes.func.isRequired,
+    handleUsernameChange: PropTypes.func.isRequired,
+    handlePasswordChange: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
+    password: PropTypes.string.isRequired
   }
 
   return (
-    {!user && loginForm()}
     <div>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
@@ -38,7 +25,7 @@ const LoginForm = () => {
             type="text"
             value={username}
             name="Username"
-            id='username'
+            id="username"
             onChange={handleUsernameChange}
           />
         </div>
@@ -49,11 +36,13 @@ const LoginForm = () => {
             value={password}
             name="Password"
             autoComplete="on"
-            id='password'
+            id="password"
             onChange={handlePasswordChange}
           />
         </div>
-        <button id="login-button" type="submit">login</button>
+        <button id="login-button" type="submit">
+          login
+        </button>
       </form>
     </div>
   )

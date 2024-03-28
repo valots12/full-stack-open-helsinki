@@ -3,16 +3,16 @@ const baseUrl = '/api/blogs'
 
 let token = null
 
-const setToken = newToken => {
+const setToken = (newToken) => {
   token = `Bearer ${newToken}`
 }
 
 const getAll = async () => {
   const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+  return request.then((response) => response.data)
 }
 
-const create = async newObject => {
+const create = async (newObject) => {
   const config = {
     headers: { Authorization: token }
   }
@@ -31,15 +31,14 @@ const create = async newObject => {
   }
 }
 
-const update = async newObject => {
+const update = async (newObject) => {
   const config = {
     headers: { Authorization: token }
   }
 
   try {
-    const response = await axios.put(`${ baseUrl }/${newObject.id}`, newObject, config)
+    const response = await axios.put(`${baseUrl}/${newObject.id}`, newObject, config)
     return response.data
-
   } catch (error) {
     console.log('errr', error.response)
     console.log('new', newObject)
@@ -53,15 +52,14 @@ const update = async newObject => {
   }
 }
 
-const deleteIt = async newObject => {
+const deleteIt = async (newObject) => {
   const config = {
     headers: { Authorization: token }
   }
 
   try {
-    const request = await axios.delete(`${ baseUrl }/${newObject.id}`, config)
+    const request = await axios.delete(`${baseUrl}/${newObject.id}`, config)
     return request.data
-
   } catch (error) {
     console.log('errr', error.response)
     console.log('new', newObject)
@@ -76,5 +74,9 @@ const deleteIt = async newObject => {
 }
 
 export default {
-  getAll, create, update, deleteIt, setToken
+  getAll,
+  create,
+  update,
+  deleteIt,
+  setToken
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
-
   const [form, setForm] = useState({
     author: '',
     title: '',
@@ -49,56 +48,29 @@ const BlogForm = ({ createBlog }) => {
       <h2>Create a new blog</h2>
       <form onSubmit={addBlog}>
         <div>
-            title:
-          <input
-            id='title'
-            type='text'
-            value={form.title}
-            name='Title'
-            onChange={handleTitle}
-          />
+          title:
+          <input id="title" type="text" value={form.title} name="Title" onChange={handleTitle} />
         </div>
         <div>
-            author:
+          author:
           <input
-            id='author'
-            type='text'
+            id="author"
+            type="text"
             value={form.author}
-            name='Author'
+            name="Author"
             onChange={handleAuthor}
           />
         </div>
         <div>
-            url:
-          <input
-            id='url'
-            type='text'
-            value={form.url}
-            name='Url'
-            onChange={handleUrl}
-          />
+          url:
+          <input id="url" type="text" value={form.url} name="Url" onChange={handleUrl} />
         </div>
-        <button id="create-button" type="submit">create</button>
+        <button id="create-button" type="submit">
+          create
+        </button>
       </form>
     </div>
   )
 }
 
 export default BlogForm
-
-
-const createBlog = async (blogObject) => {
-  const returnedBlog = await blogService.create(blogObject)
-  console.log('returnedBlog.error', returnedBlog.error)
-  console.log('returnedBlog', returnedBlog)
-
-  if (returnedBlog.error) {
-    dispatch(showNotification('error creating blog: ' + returnedBlog.error, 5))
-  } else {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-    blogFormRef.current.toggleVisibility()
-    dispatch(showNotification(`a new blog '${returnedBlog.title}' by ${returnedBlog.author} added`, 5))
-  }
-}
